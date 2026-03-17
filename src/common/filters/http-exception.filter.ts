@@ -27,14 +27,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getResponse()
         : 'Internal server error';
 
-    const errorResponse = {
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      method: request.method,
-      message: typeof message === 'object' && message !== null && 'message' in message
+    const errorMessage =
+      typeof message === 'object' && message !== null && 'message' in message
         ? (message as { message: string | string[] }).message
-        : message,
+        : message;
+
+    const errorResponse = {
+      status: 'error' as const,
+      statusCode: status,
+      message: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
+      path: request.url,
+      timestamp: new Date().toISOString(),
     };
 
     if (status >= 500) {
@@ -43,7 +46,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
         exception instanceof Error ? exception.stack : String(exception),
       );
     } else {
-      this.logger.warn(`${request.method} ${request.url} - ${status} - ${JSON.stringify(errorResponse.message)}`);
+      this.logger.warn(
+        `${request.method} ${request.url} - ${status} - ${JSON.stringify(errorResponse.message)}`,
+      );
     }
 
     response.status(status).json(errorResponse);

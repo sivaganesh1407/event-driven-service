@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { EventsModule } from './events/events.module';
-import { CustomersModule } from './customers/customers.module';
-import { PortfoliosModule } from './portfolios/portfolios.module';
-import { InvestmentsModule } from './investments/investments.module';
-import { RetirementModule } from './retirement/retirement.module';
+import { FinancialModule } from './modules/financial.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -24,10 +21,7 @@ import { AppService } from './app.service';
       inject: [ConfigService],
     }),
     EventsModule,
-    CustomersModule,
-    PortfoliosModule,
-    InvestmentsModule,
-    RetirementModule,
+    FinancialModule,
   ],
   controllers: [AppController],
   providers: [AppService],

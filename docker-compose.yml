@@ -15,5 +15,18 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    build: .
+    container_name: event-driven-service
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongodb:27017/event-driven-service
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
 volumes:
   mongodb_data:

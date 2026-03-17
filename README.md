@@ -196,21 +196,21 @@ curl http://localhost:3000/events/65f1234567890abcdef12345
 ```bash
 curl -X POST http://localhost:3000/customers \
   -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe","email":"jane@example.com","dateOfBirth":"1985-05-15","retirementAge":65}'
+  -d '{"name":"Jane Doe","email":"jane@example.com","retirementGoal":500000,"riskProfile":"MODERATE"}'
 ```
 
 **POST /portfolios**
 ```bash
 curl -X POST http://localhost:3000/portfolios \
   -H "Content-Type: application/json" \
-  -d '{"customerId":"<customer_id>","name":"Retirement 401k"}'
+  -d '{"customerId":"<customer_id>","portfolioName":"Retirement 401k"}'
 ```
 
 **POST /investments**
 ```bash
 curl -X POST http://localhost:3000/investments \
   -H "Content-Type: application/json" \
-  -d '{"portfolioId":"<portfolio_id>","type":"STOCK","symbol":"AAPL","shares":10,"purchasePrice":150,"currentValue":175,"purchaseDate":"2024-01-15"}'
+  -d '{"portfolioId":"<portfolio_id>","assetName":"AAPL","amount":1750}'
 ```
 
 **GET /retirement/projection/:customerId**

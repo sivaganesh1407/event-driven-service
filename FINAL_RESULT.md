@@ -1,10 +1,10 @@
 # Financial Services Platform – Final Result
 
-## Project Status: Complete
+## Project Status: Complete (Production-like)
 
 **Build:** Passing  
 **Tests:** 8 passed  
-**Modules:** Events, Customers, Portfolios, Investments, Retirement
+**Architecture:** Layered (models, repositories, services, controllers)
 
 ---
 
@@ -20,6 +20,13 @@ npm run start:dev
 ```
 
 API: **http://localhost:3000**
+
+---
+
+## API Response Format
+
+**Success:** `{ "status": "success", "data": { ... } }`  
+**Error:** `{ "status": "error", "statusCode": 400, "message": "...", "path": "..." }`
 
 ---
 
@@ -42,24 +49,23 @@ API: **http://localhost:3000**
 
 ---
 
-## Sample Workflow (Copy & Paste)
+## Sample Workflow
 
 ```bash
 # 1. Create customer
-CUSTOMER=$(curl -s -X POST http://localhost:3000/customers \
+curl -X POST http://localhost:3000/customers \
   -H "Content-Type: application/json" \
-  -d '{"name":"Jane Doe","email":"jane@example.com","dateOfBirth":"1985-05-15","retirementAge":65}')
-echo $CUSTOMER
+  -d '{"name":"Jane Doe","email":"jane@example.com","retirementGoal":500000,"riskProfile":"MODERATE"}'
 
 # 2. Create portfolio (use id from step 1)
 curl -X POST http://localhost:3000/portfolios \
   -H "Content-Type: application/json" \
-  -d '{"customerId":"<CUSTOMER_ID>","name":"Retirement 401k"}'
+  -d '{"customerId":"<CUSTOMER_ID>","portfolioName":"Retirement 401k"}'
 
 # 3. Create investment (use portfolio id from step 2)
 curl -X POST http://localhost:3000/investments \
   -H "Content-Type: application/json" \
-  -d '{"portfolioId":"<PORTFOLIO_ID>","type":"STOCK","symbol":"AAPL","shares":10,"purchasePrice":150,"currentValue":175,"purchaseDate":"2024-01-15"}'
+  -d '{"portfolioId":"<PORTFOLIO_ID>","assetName":"AAPL","amount":1750}'
 
 # 4. Get retirement projection
 curl http://localhost:3000/retirement/projection/<CUSTOMER_ID>
@@ -71,15 +77,14 @@ curl http://localhost:3000/retirement/projection/<CUSTOMER_ID>
 
 ```
 src/
-├── common/filters/          # Global error handling
-├── customers/               # Customer management
-├── portfolios/              # Portfolio management
-├── investments/             # Investment tracking
-├── retirement/              # Retirement projection
-├── events/                  # Event store (CDC)
+├── models/           # Mongoose schemas (Customer, Portfolio, Investment)
+├── repositories/     # Data access layer
+├── services/         # Business logic
+├── controllers/      # API layer
+├── common/           # DTOs, filters, interceptors
+├── modules/          # NestJS module wiring
+├── events/           # Event store (CDC)
 ├── app.module.ts
-├── app.controller.ts
-├── app.service.ts
 └── main.ts
 ```
 
@@ -87,15 +92,16 @@ src/
 
 ## Data Models
 
-**Customer:** name, email, dateOfBirth, retirementAge  
-**Portfolio:** customerId, name  
-**Investment:** portfolioId, type (STOCK|BOND|MUTUAL_FUND|ETF), symbol, shares, purchasePrice, currentValue, purchaseDate  
+**Customer:** id, name, email, retirementGoal, riskProfile (CONSERVATIVE|MODERATE|AGGRESSIVE)  
+**Portfolio:** id, customerId, portfolioName  
+**Investment:** id, portfolioId, assetName, amount  
 **Event:** type, payload, createdAt  
 
 ---
 
-## Retirement Projection Logic
+## Retirement Projection
 
-- **Input:** Customer age, retirement age, portfolio value
-- **Assumptions:** 6% annual return, $500/month contribution
-- **Output:** `currentPortfolioValue`, `projectedValueAtRetirement`, `yearsToRetirement`, `assumptions`
+- **Compound growth:** FV = PV × (1 + r)^n
+- **Simple growth:** FV = PV × (1 + r × n)
+- **Risk-based return:** CONSERVATIVE 4%, MODERATE 6%, AGGRESSIVE 8%
+- **Output:** currentPortfolioValue, projectedValueCompound, projectedValueSimple, retirementGoal, gapToGoal

@@ -9,7 +9,7 @@ export class Portfolio {
   customerId: Types.ObjectId;
 
   @Prop({ required: true })
-  name: string;
+  portfolioName: string;
 
   @Prop({ default: () => new Date() })
   createdAt: Date;
