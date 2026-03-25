@@ -1,5 +1,7 @@
 # Financial Services Platform
 
+> **Disclaimer:** This repository is an **independent sample project** for learning and demonstration. It is not affiliated with, endorsed by, or sponsored by any company or employer. Configuration and examples are generic and intended for **local development only**.
+
 A production-ready NestJS backend for managing retirement portfolios and customer investments. Combines **event-driven CDC simulation** with **financial services** modules for customer management, portfolio tracking, investments, and retirement projections.
 
 ## Overview
@@ -55,6 +57,8 @@ This platform provides:
 - Node.js 18+
 - Docker & Docker Compose (for MongoDB)
 - npm or yarn
+
+Dependencies are installed from the **public** npm registry (`registry.npmjs.org`). This repo includes a [`.npmrc`](./.npmrc) that pins that registry so installs work without private registry or corporate VPN access.
 
 ### 1. Install Dependencies
 
