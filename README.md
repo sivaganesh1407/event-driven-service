@@ -256,4 +256,4 @@ npm run test
 
 ## License
 
-UNLICENSED
+[MIT](LICENSE)
